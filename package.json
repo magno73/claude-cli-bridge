@@ -1,0 +1,31 @@
+{
+  "name": "claude-cli-bridge",
+  "version": "1.0.0",
+  "description": "OpenAI-compatible proxy for Claude Code CLI — use your Claude Pro/Max subscription as an API endpoint.",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsc --watch",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "keywords": [
+    "claude",
+    "anthropic",
+    "openai-compatible",
+    "proxy",
+    "claude-code",
+    "claude-cli",
+    "llm-proxy",
+    "ai-gateway",
+    "claude-max",
+    "claude-pro",
+    "prompt-caching"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0"
+  }
+}

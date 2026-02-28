@@ -1,0 +1,16 @@
+[Unit]
+Description=Claude CLI Bridge — OpenAI-compatible proxy for Claude Code CLI
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+WorkingDirectory=/path/to/claude-cli-bridge
+ExecStart=/usr/bin/node dist/server.js
+Restart=always
+RestartSec=5
+Environment=BRIDGE_PORT=3457
+Environment=BRIDGE_MODEL=sonnet
+
+[Install]
+WantedBy=multi-user.target

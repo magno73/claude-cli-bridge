@@ -20,6 +20,7 @@ This bridge wraps the official Claude Code CLI (`claude -p`) as a standard
 - **Prompt caching** — 2nd+ messages in a conversation hit the KV cache (faster, less quota)
 - **Streaming (SSE)** — real-time token-by-token responses
 - **Extended thinking** — Opus thinking blocks are handled transparently
+- **Multipart content** — handles both string and array content formats (`[{"type":"text","text":"..."}]`)
 - **Fail-fast errors** — returns proper HTTP status codes (429, 401, 502) for client-side fallback
 
 ## Quick Start

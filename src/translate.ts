@@ -13,6 +13,24 @@
 import { Message } from './sessions';
 
 /**
+ * Extracts plain text from an OpenAI content field.
+ * Handles both string content and array content (multipart format).
+ *
+ * @param content - String or array of content parts
+ * @returns Plain text string
+ */
+function extractText(content: string | Array<{ type: string; text?: string }> | unknown): string {
+  if (typeof content === 'string') return content;
+  if (Array.isArray(content)) {
+    return content
+      .filter((p): p is { type: string; text: string } => p.type === 'text' && typeof p.text === 'string')
+      .map(p => p.text)
+      .join('\n');
+  }
+  return String(content ?? '');
+}
+
+/**
  * Result of translating OpenAI messages into Claude CLI input.
  */
 export interface TranslatedInput {
@@ -76,16 +94,17 @@ export interface OpenAIResponse {
 export function translateFirstTurn(messages: Message[]): TranslatedInput {
   const systemMessages = messages.filter(m => m.role === 'system');
   const systemPrompt = systemMessages.length > 0
-    ? systemMessages.map(m => m.content).join('\n')
+    ? systemMessages.map(m => extractText(m.content)).join('\n')
     : null;
 
   // Everything except system messages becomes the prompt
   const conversation = messages
     .filter(m => m.role !== 'system')
     .map(m => {
-      if (m.role === 'user') return `User: ${m.content}`;
-      if (m.role === 'assistant') return `Assistant: ${m.content}`;
-      return m.content;
+      const text = extractText(m.content);
+      if (m.role === 'user') return `User: ${text}`;
+      if (m.role === 'assistant') return `Assistant: ${text}`;
+      return text;
     })
     .join('\n\n');
 
@@ -111,7 +130,7 @@ export function translateContinueTurn(messages: Message[]): TranslatedInput {
   }
 
   return {
-    prompt: lastUserMessage.content,
+    prompt: extractText(lastUserMessage.content),
     systemPrompt: null,
     isFirstTurn: false,
   };

@@ -31,7 +31,7 @@ export interface Session {
  */
 export interface Message {
   role: 'system' | 'user' | 'assistant';
-  content: string;
+  content: string | Array<{ type: string; text?: string }>;
 }
 
 /**
@@ -134,7 +134,12 @@ export class SessionTracker {
     // Hash system prompt + first user message to fingerprint the conversation
     const fingerprint = messages
       .slice(0, 3)
-      .map(m => `${m.role}:${typeof m.content === 'string' ? m.content.substring(0, 200) : ''}`)
+      .map(m => {
+        let text = '';
+        if (typeof m.content === 'string') text = m.content;
+        else if (Array.isArray(m.content)) text = m.content.filter(p => p.type === 'text' && p.text).map(p => p.text!).join(' ');
+        return `${m.role}:${text.substring(0, 200)}`;
+      })
       .join('|');
 
     // Simple non-crypto hash — collision resistance is not critical here

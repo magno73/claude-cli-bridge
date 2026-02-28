@@ -122,9 +122,10 @@ function buildArgs(opts: ClaudeArgs): string[] {
  */
 export function callClaudeSync(prompt: string, opts: ClaudeArgs): ClaudeCLIResponse {
   const args = buildArgs({ ...opts, stream: false });
+  const safePrompt = typeof prompt === 'string' ? prompt : String(prompt);
 
   const stdout = execSync(['claude', ...args].join(' '), {
-    input: prompt,
+    input: safePrompt,
     encoding: 'utf-8',
     maxBuffer: config.maxBufferBytes,
     timeout: config.timeoutMs,
@@ -157,8 +158,9 @@ export async function* callClaudeStream(
     env: cleanEnv(),
   });
 
-  // Send prompt via stdin
-  child.stdin!.write(prompt);
+  // Send prompt via stdin (coerce to string as safety net)
+  const safePrompt = typeof prompt === 'string' ? prompt : String(prompt);
+  child.stdin!.write(safePrompt);
   child.stdin!.end();
 
   // Collect stderr for error reporting
